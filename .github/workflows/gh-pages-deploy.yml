@@ -3,7 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main # Set this to the branch you want to deploy from
+      - main # Trigger the workflow on push to main branch
+  workflow_dispatch: # Allow manual trigger through GitHub UI
 
 jobs:
   build-and-deploy:
