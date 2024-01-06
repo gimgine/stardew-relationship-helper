@@ -23,8 +23,8 @@ export interface StardewDate {
 }
 
 export enum Season {
-  SPRING = "Spring",
-  SUMMER = "Summer",
-  FALL = "Fall",
-  WINTER = "Winter",
+  SPRING = 'Spring',
+  SUMMER = 'Summer',
+  FALL = 'Fall',
+  WINTER = 'Winter'
 }

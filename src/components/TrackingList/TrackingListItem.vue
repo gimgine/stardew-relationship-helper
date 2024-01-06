@@ -19,7 +19,7 @@
     <div class="col-span-6 grid grid-rows-2 py-2 gap-y-4">
       <div class="row-span-1 flex flex-row">
         <DraggableItem
-          v-for="item in store.state.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0)"
+          v-for="item in store.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0)"
           :key="item.name"
           :name="item.name"
         >
@@ -29,7 +29,7 @@
       <div class="row-span-1 flex flex-row h-full">
         <img
           class="brightness-50 object-contain"
-          v-for="item in store.state.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity === 0)"
+          v-for="item in store.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity === 0)"
           :key="item.name"
           :src="item.imgURL"
         />
@@ -37,7 +37,7 @@
     </div>
     <div class="col-span-1 flex flex-col justify-between items-end">
       <font-awesome-icon
-        :class="['p-2 text-warning', areDatesEqual(villager.birthday, store.state.date) ? 'block' : 'invisible']"
+        :class="['p-2 text-warning', areDatesEqual(villager.birthday, store.date) ? 'block' : 'invisible']"
         icon="fa-solid fa-cake-candles"
         beat-fade
         size="xl"
@@ -49,23 +49,24 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { StardewDate, Villager } from "@/models";
-import { defineProps, ref, defineExpose } from "vue";
-import type { Ref } from "vue";
-import store from "@/store";
-import DraggableItem from "../DraggableItem.vue";
-import ShippingBin from "../TrackingList/ShippingBin.vue";
+import type { StardewDate, Villager } from '@/models';
+import { ref } from 'vue';
+import type { Ref } from 'vue';
+import { useStore } from '@/store';
+import DraggableItem from '../DraggableItem.vue';
+import ShippingBin from '../TrackingList/ShippingBin.vue';
 
 const bin: Ref<typeof ShippingBin> = ref(ShippingBin);
 
+const store = useStore();
+
 const props = defineProps({
   villager: { type: Object as () => Villager, required: true },
-  index: { type: Number, required: true },
+  index: { type: Number, required: true }
 });
 
 function stopTracking() {
-  store.commit("stopTracking", props.index);
-  console.log(props.villager.birthday, store.state.date);
+  store.stopTracking(props.index);
 }
 
 function areDatesEqual(date1: StardewDate, date2: StardewDate) {

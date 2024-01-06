@@ -5,28 +5,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, watch, defineExpose } from "vue";
+import { ref, watch, onMounted, type Ref } from 'vue';
 
-// const props = defineProps({
-//   setMouseMove: { type: Function, required: true },
-// });
+interface FrameModule {
+  default: string;
+}
 
 const hovering: Ref<boolean> = ref(false);
-const img: Ref<HTMLElement> = ref(document.createElement("div"));
+const img: Ref<HTMLElement | null> = ref(null);
 const currentFrame: Ref<number> = ref(0);
-const interval: Ref<number> = ref(0);
-const frames: Array<string> = [
-  require("@/assets/bin/bin-0.png"),
-  require("@/assets/bin/bin-1.png"),
-  require("@/assets/bin/bin-2.png"),
-  require("@/assets/bin/bin-3.png"),
-  require("@/assets/bin/bin-4.png"),
-];
+const interval: Ref<number | null> = ref(null);
+const frames: Ref<string[]> = ref([]);
+
+// Function to load images using import.meta.glob
+const loadImages = async () => {
+  const frameFiles = import.meta.glob('@/assets/bin/*.png');
+  const modules = await Promise.all(
+    Object.entries(frameFiles).map(async ([, importFn]) => {
+      const module = (await importFn()) as FrameModule;
+      return module.default;
+    })
+  );
+  frames.value = modules;
+};
+
+onMounted(() => {
+  loadImages();
+});
 
 const startAnimation = (change: number) => {
   if (interval.value) clearInterval(interval.value);
   interval.value = setInterval(() => {
     currentFrame.value += change;
+    if (currentFrame.value >= frames.value.length) {
+      currentFrame.value = 0;
+    } else if (currentFrame.value < 0) {
+      currentFrame.value = frames.value.length - 1;
+    }
   }, 50);
 };
 
@@ -41,9 +56,8 @@ const stopHovering = () => {
 };
 
 watch(currentFrame, (value) => {
-  currentFrame.value = Math.max(Math.min(currentFrame.value, 4), 0);
-  if (value == 0 || value == 4) {
-    clearInterval(interval.value);
+  if (value === 0 || value === frames.value.length - 1) {
+    if (interval.value) clearInterval(interval.value);
   }
 });
 

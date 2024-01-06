@@ -17,7 +17,7 @@
             <TrackingList class="overflow-hidden" />
           </div>
           <div class="row-span-1 overflow-y-scroll bg-base-200 rounded shadow-md shadow-black">
-            <InventoryGrid class="overflow-hidden" />
+            <InventoryGrid />
           </div>
         </div>
         <div class="col-span-1 grid grid-rows-4 gap-4">
@@ -37,22 +37,24 @@
           <span>Actions</span>
         </li>
         <li><label @click="openModal">Import Save File</label></li>
-        <li><a @click="store.commit('reset')">Reset</a></li>
+        <li><a @click="store.reset()">Reset</a></li>
       </ul>
     </div>
     <ImportSaveModal ref="importSaveModal" />
   </div>
 </template>
 <script setup lang="ts">
-import DateTracker from "@/components/DateTracker.vue";
-import VillagerGrid from "@/components/VillagerGrid.vue";
-import TrackingList from "@/components/TrackingList/TrackingList.vue";
-import InventoryGrid from "@/components/InventoryGrid.vue";
-import ImportSaveModal from "@/components/ImportSaveModal.vue";
-import store from "@/store";
-import { Ref, ref } from "vue";
+import DateTracker from '@/components/DateTracker.vue';
+import VillagerGrid from '@/components/VillagerGrid.vue';
+import TrackingList from '@/components/TrackingList/TrackingList.vue';
+import InventoryGrid from '@/components/InventoryGrid.vue';
+import ImportSaveModal from '@/components/ImportSaveModal.vue';
+import { useStore } from '@/store';
+import { type Ref, ref } from 'vue';
 
 const importSaveModal: Ref<typeof ImportSaveModal | null> = ref(null);
+
+const store = useStore();
 
 function openModal() {
   importSaveModal.value?.open();
