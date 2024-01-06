@@ -3,16 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-import store from "./store";
+import { RouterView } from 'vue-router';
+import { onMounted } from 'vue';
+import { useStore } from './store';
+
+const store = useStore();
 
 onMounted(() => {
-  store.commit("init");
+  store.init();
 });
 </script>
-
-<style>
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-</style>

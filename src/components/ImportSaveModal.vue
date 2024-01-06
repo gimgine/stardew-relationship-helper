@@ -9,7 +9,7 @@
         <a
           :class="[
             'tab tab-lifted border-none [--tab-border-color:hsl(var(--b1))]',
-            activeTab === 'apple' ? 'tab-active !bg-base-200 [--tab-bg:hsl(var(--b2))] border' : '',
+            activeTab === 'apple' ? 'tab-active !bg-base-200 [--tab-bg:hsl(var(--b2))] border' : ''
           ]"
           @click="tabPressed('apple')"
         >
@@ -18,7 +18,7 @@
         <a
           :class="[
             'tab tab-lifted border-none [--tab-border-color:hsl(var(--b1))]',
-            activeTab === 'windows' ? 'tab-active !bg-base-200 [--tab-bg:hsl(var(--b2))]' : '',
+            activeTab === 'windows' ? 'tab-active !bg-base-200 [--tab-bg:hsl(var(--b2))]' : ''
           ]"
           @click="tabPressed('windows')"
         >
@@ -67,16 +67,18 @@
 </template>
 
 <script setup lang="ts">
-import store from "@/store";
-import { Ref, ref, defineExpose } from "vue";
-import { XMLParser } from "fast-xml-parser";
-import { Season, StardewDate } from "@/models";
+import { useStore } from '@/store';
+import { type Ref, ref } from 'vue';
+import { XMLParser } from 'fast-xml-parser';
+import { Season } from '@/models';
 
 const modalOpen = ref(false);
-const activeTab = ref("apple");
+const activeTab = ref('apple');
 const isFileLoading = ref(false);
 const fileError = ref(false);
 const saveFile: Ref<File | null> = ref(null);
+
+const store = useStore();
 
 function open() {
   modalOpen.value = true;
@@ -88,11 +90,11 @@ function close() {
 
 function tabPressed(os: string) {
   switch (os) {
-    case "apple":
-      activeTab.value = "apple";
+    case 'apple':
+      activeTab.value = 'apple';
       break;
-    case "windows":
-      activeTab.value = "windows";
+    case 'windows':
+      activeTab.value = 'windows';
       break;
   }
 }
@@ -120,10 +122,17 @@ function submitSaveFile() {
       const parser = new XMLParser();
       const parsedXML = parser.parse(xml);
 
-      const friendshipData = parsedXML.SaveGame.player.friendshipData.item;
+      const friendshipData = parsedXML.SaveGame.player.friendshipData.item.map((entry: any) => {
+        const { key, value } = entry;
+        const { string: name } = key;
+        const { Friendship: friendship } = value;
+        const { Points: friendshipPoints, Status: status } = friendship;
+        return { name, friendshipPoints, status };
+      });
+
       const day = parsedXML.SaveGame.player.dayOfMonthForSaveGame;
       const season = parsedXML.SaveGame.player.seasonForSaveGame;
-      store.commit("addSaveFileData", transformData(friendshipData, season, day));
+      store.addSaveFileData(friendshipData, { season: convertSeasonToString(season), day: day });
       isFileLoading.value = false;
       close();
     } catch (error) {
@@ -136,19 +145,7 @@ function submitSaveFile() {
   reader.readAsText(saveFile.value);
 }
 
-function transformData(dataArray: [], season: number, day: number) {
-  const friendshipData = dataArray.map((entry) => {
-    const { key, value } = entry;
-    const { string: name } = key;
-    const { Friendship: friendship } = value;
-    const { Points: friendshipPoints, Status: status } = friendship;
-    return { name, friendshipPoints, status };
-  });
-
-  return { friendshipData: friendshipData, date: { season: convertSeasonToString(season), day: day } };
-}
-
-function convertSeasonToString(season: number) {
+const convertSeasonToString = (season: 1 | 2 | 3 | 4): Season => {
   switch (season) {
     case 1:
       return Season.SPRING;
@@ -159,7 +156,7 @@ function convertSeasonToString(season: number) {
     case 4:
       return Season.WINTER;
   }
-}
+};
 
 defineExpose({ open, close });
 </script>
