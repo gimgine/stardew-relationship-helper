@@ -38,7 +38,7 @@ function stopDrag() {
     el.style.width = '';
     el.style.height = '';
     el.style.transition = '';
-    el.style['z-index'] = '';
+    el.style.zIndex = '';
   }, 280);
   document.onmousemove = null;
 }
@@ -59,7 +59,7 @@ function startDrag(e: MouseEvent) {
   self.value.style.height = height + 'px';
   placeholder.value.style.width = width + 'px';
   placeholder.value.style.height = height + 'px';
-  self.value.style['z-index'] = 100;
+  self.value.style.zIndex = '100';
   document.onmousemove = (e) => {
     e.preventDefault();
     self.value.style.top = e.y - clickY + 'px';
