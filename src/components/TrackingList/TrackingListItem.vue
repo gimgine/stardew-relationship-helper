@@ -54,7 +54,7 @@
           beat-fade
           size="xl"
         />
-        <button class="btn btn-xs rounded-br rounded-tl rounded-none text-error" @click="stopTracking">
+        <button class="btn btn-xs rounded-br rounded-tl rounded-none text-error" @click="store.stopTracking(villager.name)">
           <font-awesome-icon icon="fa-solid fa-xmark" size="lg" />
         </button>
       </div>
@@ -74,13 +74,8 @@ const bin: Ref<typeof ShippingBin> = ref(ShippingBin);
 const store = useStore();
 
 const props = defineProps({
-  villager: { type: Object as () => Villager, required: true },
-  index: { type: Number, required: true }
+  villager: { type: Object as () => Villager, required: true }
 });
-
-function stopTracking() {
-  store.stopTracking(props.index);
-}
 
 function areDatesEqual(date1: StardewDate, date2: StardewDate) {
   return date1.day === date2.day && date1.season === date2.season ? true : false;

@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="flex flex-col gap-3 p-2">
-    <TrackingListItem v-for="(villager, index) in store.trackedVillagers" :key="villager.name" :villager="villager" :index="index" ref="items" />
+    <TrackingListItem v-for="villager in store.trackedVillagers" :key="villager.name" :villager="villager" ref="items" />
   </div>
 </template>
 <script setup lang="ts">
@@ -17,12 +17,12 @@ window.onmousemove = (e: MouseEvent) => {
   items.value.forEach((item) => {
     let rect = item.bin.img.getBoundingClientRect();
     if (e.x <= rect.right && e.x >= rect.left && e.y >= rect.top && e.y <= rect.bottom) {
-      if (!item.bin.hovering && store.dragging) {
-        store.hovering = item.villager.name;
+      if (!item.bin.hovering && store.itemDragging) {
+        store.nameHovering = item.villager.name;
         item.bin.startHovering();
       }
     } else if (item.bin.hovering) {
-      store.hovering = '';
+      store.nameHovering = '';
       item.bin.stopHovering();
     }
   });
@@ -33,7 +33,7 @@ const itemDrop = () => {
     if (item.bin.hovering) item.bin.stopHovering();
   });
   nextTick(() => {
-    store.hovering = '';
+    store.nameHovering = '';
   });
 };
 

@@ -7,6 +7,7 @@ export interface Villager {
   isMarried: boolean;
   birthday: StardewDate;
   loves: Item[];
+  isTracking: boolean;
 }
 
 export interface Item {
@@ -27,4 +28,11 @@ export enum Season {
   SUMMER = 'Summer',
   FALL = 'Fall',
   WINTER = 'Winter'
+}
+
+export enum Quality {
+  NORMAL = 1,
+  SILVER = 1.1,
+  GOLD = 1.25,
+  IRIDIUM = 1.5
 }
