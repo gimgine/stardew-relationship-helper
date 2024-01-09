@@ -7,6 +7,8 @@ export const useStore = defineStore('store', () => {
   const untrackedVillagers = ref<Villager[]>([]);
   const trackedVillagers = ref<Villager[]>([]);
   const inventory = ref<Item[]>([]);
+  const inventoryFilter = ref<string>('');
+  const filteredInventory = ref<Item[]>([]);
   const date = ref<StardewDate>({} as StardewDate);
   const dragging = ref<string>('');
   const hovering = ref<string>('');
@@ -64,7 +66,7 @@ export const useStore = defineStore('store', () => {
   const changeQuantity = (name: string, value: number) => {
     const item = inventory.value.find((item) => item.name === name);
     if (item) {
-      item.quantity += value;
+      item.quantity = Math.max(0, item.quantity + value);
     }
   };
 
@@ -82,6 +84,10 @@ export const useStore = defineStore('store', () => {
     }
   };
 
+  const filterInventory = () => {
+    filteredInventory.value = inventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
+  };
+
   watch(
     trackedVillagers,
     (newValue) => {
@@ -94,6 +100,15 @@ export const useStore = defineStore('store', () => {
     inventory,
     (newValue) => {
       localStorage.setItem('inventory', JSON.stringify(newValue));
+      filterInventory();
+    },
+    { deep: true }
+  );
+
+  watch(
+    inventoryFilter,
+    () => {
+      filterInventory();
     },
     { deep: true }
   );
@@ -110,6 +125,8 @@ export const useStore = defineStore('store', () => {
     untrackedVillagers,
     trackedVillagers,
     inventory,
+    inventoryFilter,
+    filteredInventory,
     date,
     dragging,
     hovering,

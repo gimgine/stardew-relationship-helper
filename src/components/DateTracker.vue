@@ -12,16 +12,33 @@
       <option>{{ Season.FALL }}</option>
       <option>{{ Season.WINTER }}</option>
     </select>
-    <input type="number" placeholder="Day" class="input w-full col-span-2" @blur="checkDay" v-model="store.date.day" />
+    <input
+      placeholder="Day"
+      class="input w-full col-span-2"
+      :value="store.date.day"
+      @input="
+        (e: any) => {
+          if (!isNaN(e.target?.value) && e.target?.value !== '') {
+            e.target.value = store.date.day = Math.min(28, Math.max(1, parseInt(e.target?.value)));
+          } else if (e.target?.value !== '') {
+            e.target.value = store.date.day;
+          }
+        }
+      "
+      @focusout="
+        (e: any) => {
+          if (e.target.value === '') e.target.value = store.date.day = 1;
+        }
+      "
+    />
 
     <div class="col-span-6 text-center">
-      <button class="btn bg-primary btn-block mt-2">Next Day</button>
+      <button class="btn btn-primary btn-block mt-2" @click="nextDay">Next Day</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
 import { useStore } from '@/store';
 import { Season } from '@/models';
 
@@ -36,7 +53,12 @@ const seasonIcons = {
 
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-watch(store.date, (value) => {
-  store.date.day = Math.max(1, Math.min(value.day, 28));
-});
+const nextDay = () => {
+  if (store.date.day === 28) {
+    store.date.season = Object.values(Season)[(Object.values(Season).indexOf(store.date.season) + 1) % 4];
+    store.date.day = 1;
+  } else {
+    store.date.day += 1;
+  }
+};
 </script>

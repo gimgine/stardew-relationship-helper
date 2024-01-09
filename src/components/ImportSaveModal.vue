@@ -1,54 +1,39 @@
 <template>
-  <div :class="['modal', modalOpen ? 'modal-open' : '']">
+  <dialog id="importSaveModal" class="modal">
     <div class="modal-box">
       <h3 class="font-bold text-lg">Import Save File</h3>
       <p class="py-4">Import a save file to automatically load in your friendship points, current in-game date, and item quantities.</p>
       <p class="text-sm italic">Note: friendship points and item quantities will only update for the villagers you are currently tracking.</p>
       <div class="divider"></div>
-      <div class="tabs">
-        <a
-          :class="[
-            'tab tab-lifted border-none [--tab-border-color:hsl(var(--b1))]',
-            activeTab === 'apple' ? 'tab-active !bg-base-200 [--tab-bg:hsl(var(--b2))] border' : ''
-          ]"
-          @click="tabPressed('apple')"
-        >
-          <font-awesome-icon icon="fa-brands fa-apple" size="xl" />
-        </a>
-        <a
-          :class="[
-            'tab tab-lifted border-none [--tab-border-color:hsl(var(--b1))]',
-            activeTab === 'windows' ? 'tab-active !bg-base-200 [--tab-bg:hsl(var(--b2))]' : ''
-          ]"
-          @click="tabPressed('windows')"
-        >
-          <font-awesome-icon icon="fa-brands fa-windows" size="lg" />
-        </a>
-      </div>
-      <div v-if="activeTab === 'apple'" class="bg-base-200 rounded-e-lg rounded-bl-lg">
-        <ul class="space-y-3 p-3">
-          <li>1. Open Finder and select "Go" in the upper menu bar.</li>
 
-          <li>2. In the "Go" menu, select "Go to Folder"</li>
-          <li>3. Enter the following file path:</li>
-          <li><code class="bg-base-300 ml-4">~/.config/StardewValley/Saves</code></li>
-          <li>4. Select a save folder, and choose the file that takes the following format:</li>
-          <li><code class="bg-base-300 ml-4">{player name}_{lots of numbers}</code></li>
-          <li>5. Submit the file down below.</li>
-        </ul>
-      </div>
-      <div v-else-if="activeTab === 'windows'" class="bg-base-200 rounded-lg">
-        <ul class="space-y-3 p-3">
-          <li class="flex items-center">
-            1. Press
-            <kbd class="kbd mx-2"><font-awesome-icon icon="fa-brands fa-windows" /></kbd> + <kbd class="kbd mx-2">r</kbd> to open "Run"
-          </li>
-          <li>2. In the resulting text field, enter the following file path:</li>
-          <li><code class="bg-base-300 ml-4">%appdata%\StardewValley\Saves</code></li>
-          <li>3. Select a save folder, and choose the file that takes the following format:</li>
-          <li><code class="bg-base-300 ml-4">{player name}_{lots of numbers}</code></li>
-          <li>4. Submit the file down below.</li>
-        </ul>
+      <div role="tablist" class="tabs tabs-lifted">
+        <input type="radio" name="apple" role="tab" class="tab" aria-label="MacOS" checked />
+        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+          <ul class="space-y-3 p-3">
+            <li>1. Open Finder and select "Go" in the upper menu bar.</li>
+
+            <li>2. In the "Go" menu, select "Go to Folder"</li>
+            <li>3. Enter the following file path:</li>
+            <li><code class="bg-base-300 ml-4">~/.config/StardewValley/Saves</code></li>
+            <li>4. Select a save folder, and choose the file that takes the following format:</li>
+            <li><code class="bg-base-300 ml-4">{player name}_{lots of numbers}</code></li>
+            <li>5. Submit the file down below.</li>
+          </ul>
+        </div>
+        <input type="radio" name="apple" role="tab" class="tab" aria-label="Windows" />
+        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+          <ul class="space-y-3 p-3">
+            <li class="flex items-center">
+              1. Press
+              <kbd class="kbd mx-2"><font-awesome-icon icon="fa-brands fa-windows" /></kbd> + <kbd class="kbd mx-2">r</kbd> to open "Run"
+            </li>
+            <li>2. In the resulting text field, enter the following file path:</li>
+            <li><code class="bg-base-300 ml-4">%appdata%\StardewValley\Saves</code></li>
+            <li>3. Select a save folder, and choose the file that takes the following format:</li>
+            <li><code class="bg-base-300 ml-4">{player name}_{lots of numbers}</code></li>
+            <li>4. Submit the file down below.</li>
+          </ul>
+        </div>
       </div>
       <div class="mt-3"></div>
       <a class="text-sm italic hover:brightness-75" href="https://stardewvalleywiki.com/Saves" target="_blank">
@@ -63,7 +48,10 @@
         <label for="my-modal" :class="['btn', isFileLoading ? 'loading' : '']" @click="submitSaveFile">Import</label>
       </div>
     </div>
-  </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </template>
 
 <script setup lang="ts">
@@ -72,32 +60,20 @@ import { type Ref, ref } from 'vue';
 import { XMLParser } from 'fast-xml-parser';
 import { Season } from '@/models';
 
-const modalOpen = ref(false);
-const activeTab = ref('apple');
 const isFileLoading = ref(false);
 const fileError = ref(false);
 const saveFile: Ref<File | null> = ref(null);
 
 const store = useStore();
 
-function open() {
-  modalOpen.value = true;
-}
-
-function close() {
-  modalOpen.value = false;
-}
-
-function tabPressed(os: string) {
-  switch (os) {
-    case 'apple':
-      activeTab.value = 'apple';
-      break;
-    case 'windows':
-      activeTab.value = 'windows';
-      break;
+const showModal = () => {
+  const modal = document.getElementById('importSaveModal') as HTMLDialogElement;
+  if (modal) {
+    modal.showModal();
+  } else {
+    console.error('Modal element not found');
   }
-}
+};
 
 function handleFileUpload(event: Event) {
   const inputElement = event.target as HTMLInputElement;
@@ -158,5 +134,5 @@ const convertSeasonToString = (season: 1 | 2 | 3 | 4): Season => {
   }
 };
 
-defineExpose({ open, close });
+defineExpose({ showModal });
 </script>

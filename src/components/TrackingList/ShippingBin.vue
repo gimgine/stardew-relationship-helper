@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-items-center">
+  <div class="flex justify-items-center w-14">
     <img class="object-fit h-28" ref="img" :src="frames[currentFrame]" />
   </div>
 </template>
@@ -19,7 +19,7 @@ const frames: Ref<string[]> = ref([]);
 
 // Function to load images using import.meta.glob
 const loadImages = async () => {
-  const frameFiles = import.meta.glob('@/assets/bin/*.png');
+  const frameFiles = import.meta.glob('@/assets/shipping-bin/*.png');
   const modules = await Promise.all(
     Object.entries(frameFiles).map(async ([, importFn]) => {
       const module = (await importFn()) as FrameModule;
