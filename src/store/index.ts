@@ -12,6 +12,9 @@ export const useStore = defineStore('store', () => {
     return villagers.value.filter((v: Villager) => v.isTracking);
   });
   const inventory = ref<Item[]>([]);
+  const displayedInventory = computed(() => {
+    return inventory.value.filter((i: Item) => i.loveCount > 0);
+  });
   const inventoryFilter = ref<string>('');
   const filteredInventory = ref<Item[]>([]);
   const date = ref<StardewDate>({} as StardewDate);
@@ -107,7 +110,7 @@ export const useStore = defineStore('store', () => {
   };
 
   const filterInventory = () => {
-    filteredInventory.value = inventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
+    filteredInventory.value = displayedInventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
   };
 
   watch(
@@ -147,6 +150,7 @@ export const useStore = defineStore('store', () => {
     untrackedVillagers,
     trackedVillagers,
     inventory,
+    displayedInventory,
     inventoryFilter,
     filteredInventory,
     date,
@@ -179,11 +183,7 @@ const removeItemsFromInventory = (inventory: Item[], itemsToRemove: Item[]): voi
   for (const item of itemsToRemove) {
     for (let i = 0; i < inventory.length; i++) {
       if (item.name === inventory[i].name) {
-        if (inventory[i].loveCount === 1) {
-          inventory.splice(i, 1);
-        } else {
-          inventory[i].loveCount--;
-        }
+        inventory[i].loveCount--;
       }
     }
   }
