@@ -25,7 +25,7 @@ const start: Ref<{ x: number; y: number }> = ref({ x: 0, y: 0 });
 function stopDrag() {
   itemDrop();
   store.itemDrop();
-  store.dragging = '';
+  store.itemDragging = '';
   self.value.style.transition = '300ms';
   self.value.style.top = start.value.y + 'px';
   self.value.style.left = start.value.x + 'px';
@@ -45,7 +45,7 @@ function stopDrag() {
 
 function startDrag(e: MouseEvent) {
   dragging.value = true;
-  store.dragging = props.name;
+  store.itemDragging = props.name;
   const width = self.value.clientWidth;
   const height = self.value.clientHeight;
   start.value.x = self.value.getBoundingClientRect().left;
