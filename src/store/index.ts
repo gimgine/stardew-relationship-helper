@@ -1,22 +1,9 @@
 import { defineStore } from 'pinia';
 import data from './data.json';
-import { type Item, type Villager, type StardewDate, Season, Quality } from '@/models/index';
+import { type Item, type Villager, type StardewDate, Season, Quality } from '@/models';
 import { ref, watch, computed } from 'vue';
 
 export const useStore = defineStore('store', () => {
-  const villagers = ref<Villager[]>([]);
-  const untrackedVillagers = computed(() => {
-    return villagers.value.filter((v: Villager) => !v.isTracking);
-  });
-  const trackedVillagers = computed(() => {
-    return villagers.value.filter((v: Villager) => v.isTracking);
-  });
-  const inventory = ref<Item[]>([]);
-  const displayedInventory = computed(() => {
-    return inventory.value.filter((i: Item) => i.loveCount > 0);
-  });
-  const inventoryFilter = ref<string>('');
-  const filteredInventory = ref<Item[]>([]);
   const date = ref<StardewDate>({} as StardewDate);
   const itemDragging = ref<string>('');
   const nameHovering = ref<string>('');
@@ -26,27 +13,26 @@ export const useStore = defineStore('store', () => {
 
     const localVillagers = localStorage.getItem('localVillagers');
     if (localVillagers) {
-      villagers.value = JSON.parse(localVillagers) as Villager[];
+      useVillagerStore().villagers = JSON.parse(localVillagers) as Villager[];
     } else {
-      villagers.value = data as Villager[];
+      useVillagerStore().villagers = JSON.parse(JSON.stringify(data)) as Villager[];
     }
 
     const localInventory = localStorage.getItem('inventory');
-    inventory.value = localInventory ? JSON.parse(localInventory) : [];
+    useInventoryStore().inventory = localInventory ? JSON.parse(localInventory) : [];
 
     const localDate = localStorage.getItem('date');
     date.value = localDate ? JSON.parse(localDate) : { season: Season.SPRING, day: 1 };
   };
 
   const reset = () => {
-    data.forEach((villager) => villager.loves.sort((item1, item2) => (item1.name > item2.name ? 1 : -1)));
-    villagers.value = data as Villager[];
-    inventory.value = [];
+    useVillagerStore().villagers = JSON.parse(JSON.stringify(data)) as Villager[];
+    useInventoryStore().inventory = [];
     date.value = { season: Season.SPRING, day: 1 };
   };
 
   const addSaveFileData = (friendshipData: [{ name: string; friendshipPoints: number; status: string }], saveFileDate: StardewDate) => {
-    villagers.value.forEach((v: Villager) => {
+    useVillagerStore().villagers.forEach((v: Villager) => {
       const data = friendshipData.find((villager) => villager.name === v.name);
       if (data) {
         v.friendshipPoints = data.friendshipPoints;
@@ -55,12 +41,47 @@ export const useStore = defineStore('store', () => {
     date.value = saveFileDate;
   };
 
+  const itemDrop = () => {
+    if (itemDragging.value && nameHovering.value) {
+      useVillagerStore().changeFriendship(nameHovering.value);
+      useInventoryStore().changeQuantity(itemDragging.value, -1);
+    }
+  };
+
+  watch(
+    date,
+    (newValue) => {
+      localStorage.setItem('date', JSON.stringify(newValue));
+    },
+    { deep: true }
+  );
+
+  return {
+    date,
+    itemDragging,
+    nameHovering,
+    init,
+    reset,
+    addSaveFileData,
+    itemDrop
+  };
+});
+
+export const useVillagerStore = defineStore('villagerStore', () => {
+  const villagers = ref<Villager[]>([]);
+  const untrackedVillagers = computed(() => {
+    return villagers.value.filter((v: Villager) => !v.isTracking);
+  });
+  const trackedVillagers = computed(() => {
+    return villagers.value.filter((v: Villager) => v.isTracking);
+  });
+
   const startTracking = (name: string) => {
     const vill: Villager | undefined = untrackedVillagers.value.find((v) => v.name === name);
     if (vill) {
       if (!vill.friendshipPoints) vill.friendshipPoints = 0;
       vill.isTracking = true;
-      addItemsToInventory(inventory.value, vill.loves);
+      useInventoryStore().add(vill.loves);
     } else {
       console.error(`Could not start tracking ${name}.`);
     }
@@ -70,25 +91,18 @@ export const useStore = defineStore('store', () => {
     const vill: Villager | undefined = trackedVillagers.value.find((v) => v.name === name);
     if (vill) {
       vill.isTracking = false;
-      removeItemsFromInventory(inventory.value, vill.loves);
+      useInventoryStore().remove(vill.loves);
     } else {
       console.error(`Could not stop tracking ${name}.`);
     }
   };
 
-  const changeQuantity = (name: string, value: number) => {
-    const item = inventory.value.find((item) => item.name === name);
-    if (item) {
-      item.quantity = Math.max(0, item.quantity + value);
-    }
-  };
-
-  const getFriendshipPointAmount = (villager: Villager, quality: Quality = Quality.NORMAL): number => {
+  const getFriendshipPointAmount = (villager: Villager, quality: Quality = Quality.NORMAL, date: StardewDate = useStore().date): number => {
     let amount = 80;
 
-    if (villager.birthday.season === date.value.season && villager.birthday.day === date.value.day) {
+    if (villager.birthday.season === date.season && villager.birthday.day === date.day) {
       amount *= 8;
-    } else if (date.value.season === Season.WINTER && date.value.day === 25) {
+    } else if (date.season === Season.WINTER && date.day === 25) {
       amount *= 5;
     }
 
@@ -102,17 +116,6 @@ export const useStore = defineStore('store', () => {
     }
   };
 
-  const itemDrop = () => {
-    if (itemDragging.value && nameHovering.value) {
-      changeFriendship(nameHovering.value);
-      changeQuantity(itemDragging.value, -1);
-    }
-  };
-
-  const filterInventory = () => {
-    filteredInventory.value = displayedInventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
-  };
-
   watch(
     villagers,
     (newValue) => {
@@ -121,11 +124,62 @@ export const useStore = defineStore('store', () => {
     { deep: true }
   );
 
+  return {
+    villagers,
+    untrackedVillagers,
+    trackedVillagers,
+    startTracking,
+    stopTracking,
+    changeFriendship
+  };
+});
+
+export const useInventoryStore = defineStore('inventoryStore', () => {
+  const inventory = ref<Item[]>([]);
+  const displayedInventory = computed(() => {
+    return inventory.value.filter((i: Item) => i.loveCount > 0);
+  });
+  const inventoryFilter = ref<string>('');
+  const filteredInventory = ref<Item[]>([]);
+
+  const changeQuantity = (name: string, value: number) => {
+    const item = inventory.value.find((item) => item.name === name);
+    if (item) {
+      item.quantity = Math.max(0, item.quantity + value);
+    }
+  };
+
+  const add = (items: Item[]): void => {
+    for (const item of items) {
+      item.quantity = 0;
+      if (!inventory.value.some((existingItem) => existingItem.name === item.name)) {
+        item.loveCount = 1;
+        inventory.value.push(item);
+      } else {
+        inventory.value[inventory.value.findIndex((invItem) => invItem.name === item.name)].loveCount++;
+      }
+    }
+  };
+
+  const remove = (items: Item[]): void => {
+    for (const item of items) {
+      for (let i = 0; i < inventory.value.length; i++) {
+        if (item.name === inventory.value[i].name) {
+          inventory.value[i].loveCount--;
+        }
+      }
+    }
+  };
+
+  const filter = () => {
+    filteredInventory.value = displayedInventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
+  };
+
   watch(
     inventory,
     (newValue) => {
       localStorage.setItem('inventory', JSON.stringify(newValue));
-      filterInventory();
+      filter();
     },
     { deep: true }
   );
@@ -133,58 +187,19 @@ export const useStore = defineStore('store', () => {
   watch(
     inventoryFilter,
     () => {
-      filterInventory();
-    },
-    { deep: true }
-  );
-
-  watch(
-    date,
-    (newValue) => {
-      localStorage.setItem('date', JSON.stringify(newValue));
+      filter();
     },
     { deep: true }
   );
 
   return {
-    untrackedVillagers,
-    trackedVillagers,
     inventory,
     displayedInventory,
     inventoryFilter,
     filteredInventory,
-    date,
-    itemDragging,
-    nameHovering,
-    init,
-    reset,
-    addSaveFileData,
-    startTracking,
-    stopTracking,
     changeQuantity,
-    changeFriendship,
-    itemDrop
+    add,
+    remove,
+    filter
   };
 });
-
-const addItemsToInventory = (inventory: Item[], itemsToAdd: Item[]): void => {
-  for (const item of itemsToAdd) {
-    item.quantity = 0;
-    if (!inventory.some((existingItem) => existingItem.name === item.name)) {
-      item.loveCount = 1;
-      inventory.push(item);
-    } else {
-      inventory[inventory.findIndex((invItem) => invItem.name === item.name)].loveCount++;
-    }
-  }
-};
-
-const removeItemsFromInventory = (inventory: Item[], itemsToRemove: Item[]): void => {
-  for (const item of itemsToRemove) {
-    for (let i = 0; i < inventory.length; i++) {
-      if (item.name === inventory[i].name) {
-        inventory[i].loveCount--;
-      }
-    }
-  }
-};

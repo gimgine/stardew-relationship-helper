@@ -3,9 +3,9 @@
     <div class="grid grid-cols-3 place-items-center gap-3 p-3">
       <div
         class="btn btn-square bg-base-100 w-full h-full shadow-sm shadow-black flex-col py-1"
-        v-for="villager in store.untrackedVillagers"
+        v-for="villager in villagerStore.untrackedVillagers"
         :key="villager.name"
-        @click="store.startTracking(villager.name)"
+        @click="villagerStore.startTracking(villager.name)"
       >
         <img :src="villager.iconURL" :id="villager.name" />
         <p class="text-xs">{{ villager.name }}</p>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store';
+import { useVillagerStore } from '@/store';
 
-const store = useStore();
+const villagerStore = useVillagerStore();
 </script>

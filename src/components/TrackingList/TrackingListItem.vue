@@ -20,14 +20,16 @@
         <p
           :class="[
             'text-xs italic',
-            store.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0).length === 0 ? 'pb-[52px]' : 'pb-1'
+            inventoryStore.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0).length === 0
+              ? 'pb-[52px]'
+              : 'pb-1'
           ]"
         >
           you have
         </p>
         <div class="flex">
           <DraggableItem
-            v-for="item in store.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0)"
+            v-for="item in inventoryStore.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0)"
             :key="item.name"
             :name="item.name"
           >
@@ -38,7 +40,7 @@
         <div class="flex">
           <img
             class="brightness-50 object-contain"
-            v-for="item in store.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity === 0)"
+            v-for="item in inventoryStore.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity === 0)"
             :key="item.name"
             :src="item.imgURL"
           />
@@ -54,7 +56,7 @@
           beat-fade
           size="xl"
         />
-        <button class="btn btn-xs rounded-br rounded-tl rounded-none text-error" @click="store.stopTracking(villager.name)">
+        <button class="btn btn-xs rounded-br rounded-tl rounded-none text-error" @click="villagerStore.stopTracking(villager.name)">
           <font-awesome-icon icon="fa-solid fa-xmark" size="lg" />
         </button>
       </div>
@@ -65,13 +67,15 @@
 import type { StardewDate, Villager } from '@/models';
 import { ref } from 'vue';
 import type { Ref } from 'vue';
-import { useStore } from '@/store';
+import { useInventoryStore, useStore, useVillagerStore } from '@/store';
 import DraggableItem from '../DraggableItem.vue';
 import ShippingBin from '../TrackingList/ShippingBin.vue';
 
 const bin: Ref<typeof ShippingBin> = ref(ShippingBin);
 
 const store = useStore();
+const villagerStore = useVillagerStore();
+const inventoryStore = useInventoryStore();
 
 const props = defineProps({
   villager: { type: Object as () => Villager, required: true }

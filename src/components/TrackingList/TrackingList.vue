@@ -1,10 +1,11 @@
-<template lang="html">
+<template>
   <div class="flex flex-col gap-3 p-2">
-    <TrackingListItem v-for="villager in store.trackedVillagers" :key="villager.name" :villager="villager" ref="items" />
+    <TrackingListItem v-for="villager in villagerStore.trackedVillagers" :key="villager.name" :villager="villager" ref="items" />
   </div>
 </template>
+
 <script setup lang="ts">
-import { useStore } from '@/store';
+import { useStore, useVillagerStore } from '@/store';
 import TrackingListItem from './TrackingListItem.vue';
 import { nextTick, provide, ref } from 'vue';
 import type { Ref } from 'vue';
@@ -12,6 +13,7 @@ import type { Ref } from 'vue';
 const items: Ref<Array<typeof TrackingListItem>> = ref([]);
 
 const store = useStore();
+const villagerStore = useVillagerStore();
 
 window.onmousemove = (e: MouseEvent) => {
   items.value.forEach((item) => {
