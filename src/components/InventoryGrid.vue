@@ -1,14 +1,14 @@
 <template lang="html">
-  <input v-model="store.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mt-2 ml-2" />
+  <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mt-2 ml-2" />
   <div class="flex flex-wrap gap-2 justify-start overflow-y-auto overflow-x-clip">
-    <div class="min-w-[4.8rem] flex items-center flex-col" v-for="item in store.filteredInventory" :key="item.name">
-      <a :href="item.wikiURL" target="_blank" class="tooltip z-50" :data-tip="item.name">
+    <div class="min-w-[4.8rem] flex items-center flex-col" v-for="item in inventoryStore.filteredInventory" :key="item.name">
+      <a :href="item.wikiURL" target="_blank" class="tooltip" :data-tip="item.name">
         <img class="mb-1 hover:brightness-75" :src="item.imgURL" />
       </a>
       <div class="flex">
         <span
           class="indicator-item indicator-bottom indicator-start btn btn-xs rounded-tl rounded-bl rounded-none bg-neutral border-none"
-          @click="changeQuantity(item.name, -1)"
+          @click="inventoryStore.changeQuantity(item.name, -1)"
         >
           -
         </span>
@@ -32,7 +32,7 @@
         />
         <span
           class="indicator-item indicator-bottom indicator-end btn btn-xs rounded-tr rounded-br rounded-none bg-neutral border-none"
-          @click="changeQuantity(item.name, 1)"
+          @click="inventoryStore.changeQuantity(item.name, 1)"
         >
           +
         </span>
@@ -42,11 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store';
+import { useInventoryStore } from '@/store';
 
-const store = useStore();
-
-function changeQuantity(name: string, value: number) {
-  store.changeQuantity(name, value);
-}
+const inventoryStore = useInventoryStore();
 </script>

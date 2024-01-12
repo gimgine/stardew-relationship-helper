@@ -8,6 +8,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/:option',
+      name: 'option',
+      component: HomeView,
+      props: true
     }
   ]
 });

@@ -28,3 +28,16 @@ export enum Season {
   FALL = 'Fall',
   WINTER = 'Winter'
 }
+
+export enum Quality {
+  NORMAL = 1,
+  SILVER = 1.1,
+  GOLD = 1.25,
+  IRIDIUM = 1.5
+}
+
+export enum HomeViewOption {
+  TRACKER = 'tracker',
+  VILLAGERS = 'villagers',
+  INVENTORY = 'inventory'
+}
