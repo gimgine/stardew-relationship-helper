@@ -7,6 +7,7 @@ export interface Villager {
   isMarried: boolean;
   birthday: StardewDate;
   loves: Item[];
+  isTracking: boolean;
 }
 
 export interface Item {

@@ -1,117 +1,52 @@
 import { defineStore } from 'pinia';
 import data from './data.json';
-import { type Item, type Villager, type StardewDate, Season } from '@/models/index';
-import { ref, watch } from 'vue';
+import { type Item, type Villager, type StardewDate, Season, Quality } from '@/models';
+import { ref, watch, computed } from 'vue';
 
 export const useStore = defineStore('store', () => {
-  const untrackedVillagers = ref<Villager[]>([]);
-  const trackedVillagers = ref<Villager[]>([]);
-  const inventory = ref<Item[]>([]);
-  const inventoryFilter = ref<string>('');
-  const filteredInventory = ref<Item[]>([]);
   const date = ref<StardewDate>({} as StardewDate);
-  const dragging = ref<string>('');
-  const hovering = ref<string>('');
+  const itemDragging = ref<string>('');
+  const nameHovering = ref<string>('');
 
   const init = () => {
     data.forEach((villager) => villager.loves.sort((item1, item2) => (item1.name > item2.name ? 1 : -1)));
 
-    const localTrackedVillagers = localStorage.getItem('trackedVillagers');
-    if (localTrackedVillagers) {
-      trackedVillagers.value = JSON.parse(localTrackedVillagers) as Villager[];
-      untrackedVillagers.value = (data as Villager[]).filter((villager) => !trackedVillagers.value.find((v) => v.name === villager.name));
+    const localVillagers = localStorage.getItem('localVillagers');
+    if (localVillagers) {
+      useVillagerStore().villagers = JSON.parse(localVillagers) as Villager[];
     } else {
-      untrackedVillagers.value = data as Villager[];
+      useVillagerStore().villagers = JSON.parse(JSON.stringify(data)) as Villager[];
     }
 
     const localInventory = localStorage.getItem('inventory');
-    inventory.value = localInventory ? JSON.parse(localInventory) : [];
+    useInventoryStore().inventory = localInventory ? JSON.parse(localInventory) : [];
 
     const localDate = localStorage.getItem('date');
     date.value = localDate ? JSON.parse(localDate) : { season: Season.SPRING, day: 1 };
   };
 
   const reset = () => {
-    data.forEach((villager) => villager.loves.sort((item1, item2) => (item1.name > item2.name ? 1 : -1)));
-    untrackedVillagers.value = data as Villager[];
-    trackedVillagers.value = [];
-    inventory.value = [];
+    useVillagerStore().villagers = JSON.parse(JSON.stringify(data)) as Villager[];
+    useInventoryStore().inventory = [];
     date.value = { season: Season.SPRING, day: 1 };
   };
 
   const addSaveFileData = (friendshipData: [{ name: string; friendshipPoints: number; status: string }], saveFileDate: StardewDate) => {
-    trackedVillagers.value.forEach((trackedVillager) => {
-      const data = friendshipData.find((villager) => villager.name === trackedVillager.name);
+    useVillagerStore().villagers.forEach((v: Villager) => {
+      const data = friendshipData.find((villager) => villager.name === v.name);
       if (data) {
-        trackedVillager.friendshipPoints = data.friendshipPoints;
+        v.friendshipPoints = data.friendshipPoints;
       }
     });
     date.value = saveFileDate;
   };
 
-  const startTracking = (index: number) => {
-    const vill: Villager = removeVillager(index, untrackedVillagers.value);
-    vill.friendshipPoints = 0;
-    trackedVillagers.value.push(vill);
-    addItemsToInventory(inventory.value, vill.loves);
-  };
-
-  const stopTracking = (index: number) => {
-    const vill: Villager = removeVillager(index, trackedVillagers.value);
-    untrackedVillagers.value.push(vill);
-    untrackedVillagers.value.sort((a, b) => (a.name > b.name ? 1 : -1));
-    removeItemsFromInventory(inventory.value, vill.loves);
-  };
-
-  const changeQuantity = (name: string, value: number) => {
-    const item = inventory.value.find((item) => item.name === name);
-    if (item) {
-      item.quantity = Math.max(0, item.quantity + value);
-    }
-  };
-
-  const changeFriendship = (villager: string, amount: number) => {
-    const maybeTrackedVillager = trackedVillagers.value.find((v) => v.name === villager);
-    if (maybeTrackedVillager) {
-      maybeTrackedVillager.friendshipPoints += amount;
-    }
-  };
-
   const itemDrop = () => {
-    if (dragging.value && hovering.value) {
-      changeFriendship(hovering.value, 250);
-      changeQuantity(dragging.value, -1);
+    if (itemDragging.value && nameHovering.value) {
+      useVillagerStore().changeFriendship(nameHovering.value);
+      useInventoryStore().changeQuantity(itemDragging.value, -1);
     }
   };
-
-  const filterInventory = () => {
-    filteredInventory.value = inventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
-  };
-
-  watch(
-    trackedVillagers,
-    (newValue) => {
-      localStorage.setItem('trackedVillagers', JSON.stringify(newValue));
-    },
-    { deep: true }
-  );
-
-  watch(
-    inventory,
-    (newValue) => {
-      localStorage.setItem('inventory', JSON.stringify(newValue));
-      filterInventory();
-    },
-    { deep: true }
-  );
-
-  watch(
-    inventoryFilter,
-    () => {
-      filterInventory();
-    },
-    { deep: true }
-  );
 
   watch(
     date,
@@ -122,53 +57,149 @@ export const useStore = defineStore('store', () => {
   );
 
   return {
-    untrackedVillagers,
-    trackedVillagers,
-    inventory,
-    inventoryFilter,
-    filteredInventory,
     date,
-    dragging,
-    hovering,
+    itemDragging,
+    nameHovering,
     init,
     reset,
     addSaveFileData,
-    startTracking,
-    stopTracking,
-    changeQuantity,
-    changeFriendship,
     itemDrop
   };
 });
 
-const removeVillager = (index: number, arr: Villager[]): Villager => {
-  const villager = arr[index];
-  arr.splice(index, 1);
-  return villager;
-};
+export const useVillagerStore = defineStore('villagerStore', () => {
+  const villagers = ref<Villager[]>([]);
+  const untrackedVillagers = computed(() => {
+    return villagers.value.filter((v: Villager) => !v.isTracking);
+  });
+  const trackedVillagers = computed(() => {
+    return villagers.value.filter((v: Villager) => v.isTracking);
+  });
 
-const addItemsToInventory = (inventory: Item[], itemsToAdd: Item[]): void => {
-  for (const item of itemsToAdd) {
-    item.quantity = 0;
-    if (!inventory.some((existingItem) => existingItem.name === item.name)) {
-      item.loveCount = 1;
-      inventory.push(item);
+  const startTracking = (name: string) => {
+    const vill: Villager | undefined = untrackedVillagers.value.find((v) => v.name === name);
+    if (vill) {
+      if (!vill.friendshipPoints) vill.friendshipPoints = 0;
+      vill.isTracking = true;
+      useInventoryStore().add(vill.loves);
     } else {
-      inventory[inventory.findIndex((invItem) => invItem.name === item.name)].loveCount++;
+      console.error(`Could not start tracking ${name}.`);
     }
-  }
-};
+  };
 
-const removeItemsFromInventory = (inventory: Item[], itemsToRemove: Item[]): void => {
-  for (const item of itemsToRemove) {
-    for (let i = 0; i < inventory.length; i++) {
-      if (item.name === inventory[i].name) {
-        if (inventory[i].loveCount === 1) {
-          inventory.splice(i, 1);
-        } else {
-          inventory[i].loveCount--;
+  const stopTracking = (name: string) => {
+    const vill: Villager | undefined = trackedVillagers.value.find((v) => v.name === name);
+    if (vill) {
+      vill.isTracking = false;
+      useInventoryStore().remove(vill.loves);
+    } else {
+      console.error(`Could not stop tracking ${name}.`);
+    }
+  };
+
+  const getFriendshipPointAmount = (villager: Villager, quality: Quality = Quality.NORMAL, date: StardewDate = useStore().date): number => {
+    let amount = 80;
+
+    if (villager.birthday.season === date.season && villager.birthday.day === date.day) {
+      amount *= 8;
+    } else if (date.season === Season.WINTER && date.day === 25) {
+      amount *= 5;
+    }
+
+    return (amount *= quality);
+  };
+
+  const changeFriendship = (name: string) => {
+    const villager = trackedVillagers.value.find((v) => v.name === name);
+    if (villager) {
+      villager.friendshipPoints += getFriendshipPointAmount(villager);
+    }
+  };
+
+  watch(
+    villagers,
+    (newValue) => {
+      localStorage.setItem('localVillagers', JSON.stringify(newValue));
+    },
+    { deep: true }
+  );
+
+  return {
+    villagers,
+    untrackedVillagers,
+    trackedVillagers,
+    startTracking,
+    stopTracking,
+    changeFriendship
+  };
+});
+
+export const useInventoryStore = defineStore('inventoryStore', () => {
+  const inventory = ref<Item[]>([]);
+  const displayedInventory = computed(() => {
+    return inventory.value.filter((i: Item) => i.loveCount > 0);
+  });
+  const inventoryFilter = ref<string>('');
+  const filteredInventory = ref<Item[]>([]);
+
+  const changeQuantity = (name: string, value: number) => {
+    const item = inventory.value.find((item) => item.name === name);
+    if (item) {
+      item.quantity = Math.max(0, item.quantity + value);
+    }
+  };
+
+  const add = (items: Item[]): void => {
+    for (const item of items) {
+      item.quantity = 0;
+      if (!inventory.value.some((existingItem) => existingItem.name === item.name)) {
+        item.loveCount = 1;
+        inventory.value.push(item);
+      } else {
+        inventory.value[inventory.value.findIndex((invItem) => invItem.name === item.name)].loveCount++;
+      }
+    }
+  };
+
+  const remove = (items: Item[]): void => {
+    for (const item of items) {
+      for (let i = 0; i < inventory.value.length; i++) {
+        if (item.name === inventory.value[i].name) {
+          inventory.value[i].loveCount--;
         }
       }
     }
-  }
-};
+  };
+
+  const filter = () => {
+    filteredInventory.value = displayedInventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
+  };
+
+  watch(
+    inventory,
+    (newValue) => {
+      localStorage.setItem('inventory', JSON.stringify(newValue));
+      filter();
+    },
+    { deep: true }
+  );
+
+  watch(
+    inventoryFilter,
+    () => {
+      filter();
+    },
+    { deep: true }
+  );
+
+  return {
+    inventory,
+    displayedInventory,
+    inventoryFilter,
+    filteredInventory,
+    changeQuantity,
+    add,
+    remove,
+    filter
+  };
+});
