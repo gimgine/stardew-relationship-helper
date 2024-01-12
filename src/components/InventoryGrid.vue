@@ -2,7 +2,7 @@
   <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mt-2 ml-2" />
   <div class="flex flex-wrap gap-2 justify-start overflow-y-auto overflow-x-clip">
     <div class="min-w-[4.8rem] flex items-center flex-col" v-for="item in inventoryStore.filteredInventory" :key="item.name">
-      <a :href="item.wikiURL" target="_blank" class="tooltip z-50" :data-tip="item.name">
+      <a :href="item.wikiURL" target="_blank" class="tooltip" :data-tip="item.name">
         <img class="mb-1 hover:brightness-75" :src="item.imgURL" />
       </a>
       <div class="flex">

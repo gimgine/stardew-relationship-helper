@@ -36,3 +36,9 @@ export enum Quality {
   GOLD = 1.25,
   IRIDIUM = 1.5
 }
+
+export enum HomeViewOption {
+  TRACKER = 'tracker',
+  VILLAGERS = 'villagers',
+  INVENTORY = 'inventory'
+}
