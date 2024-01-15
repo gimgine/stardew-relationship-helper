@@ -19,11 +19,11 @@
         </div>
       </div>
       <div class="flex flex-grow">
-        <div class="flex flex-col p-2 flex-grow">
+        <div class="flex flex-col p-2 flex-grow select-none">
           <p class="text-xs italic pb-1">you have</p>
           <div class="flex overflow-x-auto h-12">
             <img
-              class="object-contain"
+              class="object-contain [-webkit-touch-callout:none!important]"
               v-for="item in inventoryStore.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity > 0)"
               :key="item.name"
               :src="item.imgURL"
