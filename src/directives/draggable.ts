@@ -14,10 +14,12 @@ const Directive: ObjectDirective<HTMLElement, DraggableDirective> = {
       const startY = el.getBoundingClientRect().top + window.scrollY;
       const clickX = e.touches[0].clientX - startX;
       const clickY = e.touches[0].clientY - startY;
+      el.style.pointerEvents = 'none';
       touchTimeout = setTimeout(() => {
         binding.value.onDragStart?.();
         placeholder.style.minWidth = `${el.clientWidth}px`;
         placeholder.style.minHeight = `${el.clientHeight}px`;
+        el.style.pointerEvents = '';
         el.style.position = 'absolute';
         el.style.top = startY + 'px';
         el.style.left = startX + 'px';
@@ -30,7 +32,6 @@ const Directive: ObjectDirective<HTMLElement, DraggableDirective> = {
           el.style.left = ev.touches[0].clientX - clickX + 'px';
         };
         el.ontouchend = () => {
-          console.log('touchend');
           binding.value.onDragEnd?.();
           el.style.transition = '300ms';
           el.style.top = startY + 'px';
@@ -46,9 +47,10 @@ const Directive: ObjectDirective<HTMLElement, DraggableDirective> = {
           }, 280);
           el.ontouchend = el.ontouchmove = null;
         };
-      }, 500);
+      }, 400);
       el.ontouchmove = el.ontouchend = () => {
         clearTimeout(touchTimeout);
+        el.style.pointerEvents = '';
         el.ontouchend = el.ontouchmove = null;
       };
     };
