@@ -1,6 +1,6 @@
 <template lang="html">
-  <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mt-2 ml-2" />
-  <div class="flex flex-wrap gap-2 justify-start overflow-y-auto overflow-x-clip">
+  <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mt-2 mx-2" />
+  <div class="grid gap-2 grid-cols-[repeat(auto-fit,minmax(76px,1fr))] overflow-y-auto overflow-x-hidden">
     <div class="min-w-[4.8rem] flex items-center flex-col" v-for="item in inventoryStore.filteredInventory" :key="item.name">
       <a :href="item.wikiURL" target="_blank" class="tooltip" :data-tip="item.name">
         <img class="mb-1 hover:brightness-75" :src="item.imgURL" />

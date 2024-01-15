@@ -14,9 +14,11 @@ const pinia = createPinia();
 
 import { faXmark, faCakeCandles } from '@fortawesome/free-solid-svg-icons';
 import { faApple, faWindows } from '@fortawesome/free-brands-svg-icons';
+import DraggableDirective from './directives/draggable';
 library.add(faXmark, faCakeCandles, faApple, faWindows);
 
 app.use(router);
 app.use(pinia);
+app.directive('draggable', DraggableDirective);
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.mount('#app');

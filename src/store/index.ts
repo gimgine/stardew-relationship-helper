@@ -5,8 +5,6 @@ import { ref, watch, computed } from 'vue';
 
 export const useStore = defineStore('store', () => {
   const date = ref<StardewDate>({} as StardewDate);
-  const itemDragging = ref<string>('');
-  const nameHovering = ref<string>('');
 
   const init = () => {
     data.forEach((villager) => villager.loves.sort((item1, item2) => (item1.name > item2.name ? 1 : -1)));
@@ -41,11 +39,9 @@ export const useStore = defineStore('store', () => {
     date.value = saveFileDate;
   };
 
-  const itemDrop = () => {
-    if (itemDragging.value && nameHovering.value) {
-      useVillagerStore().changeFriendship(nameHovering.value);
-      useInventoryStore().changeQuantity(itemDragging.value, -1);
-    }
+  const giveItem = (villager: string, item: string) => {
+    useVillagerStore().changeFriendship(villager);
+    useInventoryStore().changeQuantity(item, -1);
   };
 
   watch(
@@ -58,12 +54,10 @@ export const useStore = defineStore('store', () => {
 
   return {
     date,
-    itemDragging,
-    nameHovering,
     init,
     reset,
     addSaveFileData,
-    itemDrop
+    giveItem
   };
 });
 
