@@ -1,43 +1,12 @@
 <template>
   <div class="flex flex-col gap-3 p-2">
-    <TrackingListItem v-for="villager in villagerStore.trackedVillagers" :key="villager.name" :villager="villager" ref="items" />
+    <TrackingListItem v-for="villager in villagerStore.trackedVillagers" :key="villager.name" :villager="villager" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useStore, useVillagerStore } from '@/store';
+import { useVillagerStore } from '@/store';
 import TrackingListItem from './TrackingListItem.vue';
-import { nextTick, provide, ref } from 'vue';
-import type { Ref } from 'vue';
 
-const items: Ref<Array<typeof TrackingListItem>> = ref([]);
-
-const store = useStore();
 const villagerStore = useVillagerStore();
-
-window.onmousemove = (e: MouseEvent) => {
-  items.value.forEach((item) => {
-    let rect = item.bin.img.getBoundingClientRect();
-    if (e.x <= rect.right && e.x >= rect.left && e.y >= rect.top && e.y <= rect.bottom) {
-      if (!item.bin.hovering && store.itemDragging) {
-        store.nameHovering = item.villager.name;
-        item.bin.startHovering();
-      }
-    } else if (item.bin.hovering) {
-      store.nameHovering = '';
-      item.bin.stopHovering();
-    }
-  });
-};
-
-const itemDrop = () => {
-  items.value.forEach((item) => {
-    if (item.bin.hovering) item.bin.stopHovering();
-  });
-  nextTick(() => {
-    store.nameHovering = '';
-  });
-};
-
-provide('itemDrop', itemDrop);
 </script>

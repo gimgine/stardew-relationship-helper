@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-items-center w-14">
-    <img class="object-fit h-28" ref="img" :src="frames[currentFrame]" />
+  <div class="flex justify-center items-center">
+    <img class="object-fit" ref="img" :src="frames[currentFrame]" />
   </div>
 </template>
 
@@ -37,10 +37,10 @@ const startAnimation = (change: number) => {
   if (interval.value) clearInterval(interval.value);
   interval.value = setInterval(() => {
     currentFrame.value += change;
-    if (currentFrame.value >= frames.value.length) {
-      currentFrame.value = 0;
-    } else if (currentFrame.value < 0) {
+    if (currentFrame.value > frames.value.length) {
       currentFrame.value = frames.value.length - 1;
+    } else if (currentFrame.value < 0) {
+      currentFrame.value = 0;
     }
   }, 50);
 };

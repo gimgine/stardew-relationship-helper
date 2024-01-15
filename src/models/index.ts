@@ -23,6 +23,12 @@ export interface StardewDate {
   day: number;
 }
 
+export interface DraggableDirective {
+  onDragStart?: () => void;
+  onDrag?: (x: number, y: number) => void;
+  onDragEnd?: () => void;
+}
+
 export enum Season {
   SPRING = 'Spring',
   SUMMER = 'Summer',
