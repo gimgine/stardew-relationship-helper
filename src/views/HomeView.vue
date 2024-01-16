@@ -4,7 +4,7 @@
     <!-- Main content -->
     <div class="drawer-content">
       <!-- Mobile -->
-      <div class="md:hidden" data-theme="dark">
+      <div class="md:hidden h-[calc(100vh-4rem)] overflow-y-auto" data-theme="dark">
         <label for="drawer" class="h-10 mb-2 flex flex-nowrap items-center btn gap-5 bg-base-200 drawer-button">
           <img class="object-contain h-4/5" src="https://stardewvalleywiki.com/mediawiki/images/6/61/Blue_Chicken.png" />
           <span class="text-lg font-bold normal-case overflow-hidden whitespace-nowrap">Stardew Relationship Helper</span>
@@ -13,7 +13,22 @@
         <VillagerGrid v-else-if="props.option === HomeViewOption.VILLAGERS" />
         <InventoryGrid v-else-if="props.option === HomeViewOption.INVENTORY" />
       </div>
+      <div class="md:hidden btm-nav">
+        <button :class="[props.option === HomeViewOption.VILLAGERS ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.VILLAGERS}` })">
+          <font-awesome-icon icon="fa-solid fa-user-plus" class="text-green-400" />
+          <span class="btn-nav-label">Villagers</span>
+        </button>
+        <button :class="[props.option === HomeViewOption.TRACKER ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.TRACKER}` })">
+          <font-awesome-icon icon="fa-solid fa-heart" class="text-red-400" />
+          <span class="btn-nav-label">Tracker</span>
+        </button>
+        <button :class="[props.option === HomeViewOption.INVENTORY ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.INVENTORY}` })">
+          <font-awesome-icon icon="fa-solid fa-boxes-stacked" class="text-blue-400" />
+          <span class="btn-nav-label">Inventory</span>
+        </button>
+      </div>
 
+      <!-- Desktop -->
       <div class="hidden md:grid grid-cols-5 grid-rows-1 h-screen max-h-screen p-4 gap-4" data-theme="dark">
         <!-- Left column -->
         <div class="col-span-1 flex flex-col">

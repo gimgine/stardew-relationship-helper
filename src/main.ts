@@ -12,10 +12,10 @@ import 'tailwindcss/utilities.css';
 const app = createApp(App);
 const pinia = createPinia();
 
-import { faXmark, faCakeCandles } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faCakeCandles, faUserPlus, faHeart, faBoxesStacked } from '@fortawesome/free-solid-svg-icons';
 import { faApple, faWindows } from '@fortawesome/free-brands-svg-icons';
 import DraggableDirective from './directives/draggable';
-library.add(faXmark, faCakeCandles, faApple, faWindows);
+library.add(faXmark, faCakeCandles, faUserPlus, faHeart, faBoxesStacked, faApple, faWindows);
 
 app.use(router);
 app.use(pinia);
