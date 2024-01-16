@@ -1,10 +1,19 @@
 <template lang="html">
-  <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mt-2 mx-2" />
-  <div class="grid gap-2 grid-cols-[repeat(auto-fit,minmax(76px,1fr))] overflow-y-auto overflow-x-hidden">
-    <div class="min-w-[4.8rem] flex items-center flex-col" v-for="item in inventoryStore.filteredInventory" :key="item.name">
+  <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full max-w-xs mb-2" />
+  <div class="flex flex-col gap-2 h-full w-full overflow-y-auto overflow-x-hidden">
+    <div class="flex gap-2 items-center" v-for="item in inventoryStore.filteredInventory" :key="item.name">
       <a :href="item.wikiURL" target="_blank" class="tooltip" :data-tip="item.name">
         <img class="mb-1 hover:brightness-75" :src="item.imgURL" />
       </a>
+      <p
+        class="truncate flex-grow"
+        v-html="
+          item.name.replace(
+            new RegExp(inventoryStore.inventoryFilter.toLowerCase(), 'i'),
+            (match) => `<strong class='text-primary'>${match}</strong>`
+          )
+        "
+      ></p>
       <div class="flex">
         <span
           class="indicator-item indicator-bottom indicator-start btn btn-xs rounded-tl rounded-bl rounded-none bg-neutral border-none"
@@ -28,7 +37,7 @@
               if (e.target.value === '') e.target.value = item.quantity = 0;
             }
           "
-          class="indicator-item indicator-bottom indicator-center w-[1.5rem] text-center bg-neutral"
+          class="indicator-item indicator-bottom indicator-center w-[2rem] text-center bg-neutral"
         />
         <span
           class="indicator-item indicator-bottom indicator-end btn btn-xs rounded-tr rounded-br rounded-none bg-neutral border-none"

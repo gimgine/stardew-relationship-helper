@@ -27,22 +27,20 @@
         </div>
 
         <!-- Center column -->
-        <div class="col-span-3 grid grid-rows-3 gap-4">
-          <div class="row-span-2 overflow-y-auto rounded bg-base-200 shadow-md shadow-black">
+        <div class="col-span-3">
+          <div class="overflow-y-auto h-full rounded bg-base-200 shadow-md shadow-black">
             <TrackingList class="overflow-hidden" />
-          </div>
-          <div class="row-span-1 bg-base-200 rounded shadow-md shadow-black flex flex-col gap-3">
-            <InventoryGrid />
           </div>
         </div>
 
         <!-- Right column -->
-        <div class="col-span-1 grid grid-rows-4 gap-4">
-          <div class="row-span-1 bg-base-200 rounded shadow-md shadow-black">
+        <div class="col-span-1 flex flex-col gap-4">
+          <div class="bg-base-200 rounded shadow-md shadow-black">
             <DateTracker />
           </div>
-          <div class="row-span-3 bg-base-200 rounded shadow-md shadow-black flex items-end justify-center">
-            <div class="italic text-xs tracking-wide mb-2">by @naroop and @jreinke428 2023</div>
+          <div class="bg-base-200 rounded shadow-md shadow-black flex flex-col flex-grow items-center justify-between overflow-y-auto p-2">
+            <InventoryGrid />
+            <div class="italic text-xs tracking-wide">by @naroop and @jreinke428 2023</div>
           </div>
         </div>
       </div>
