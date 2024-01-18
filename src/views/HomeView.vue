@@ -1,38 +1,11 @@
 <template>
   <!-- Navbar -->
-  <div class="navbar bg-base-200 justify-between">
-    <div class="navbar-start md:hidden">
-      <div class="dropdown">
-        <label for="drawer" class="btn btn-ghost md:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-          </svg>
-        </label>
-      </div>
-    </div>
-    <div class="navbar-center ml-3">
-      <img class="h-8 mr-3" src="https://stardewvalleywiki.com/mediawiki/images/6/61/Blue_Chicken.png" />
-      <span class="hidden md:block text-lg font-bold normal-case overflow-hidden whitespace-nowrap">Stardew Relationship Helper</span>
-    </div>
-    <div class="navbar-end">
-      <div class="dropdown dropdown-end md:hidden">
-        <div tabindex="0" role="button" class="btn m-1">
-          <font-awesome-icon icon="fa-solid fa-calendar" size="lg" />
-        </div>
-        <div tabindex="0" class="dropdown-content mt-4 z-[1] p-2 shadow-lg bg-base-200 rounded-box w-72">
-          <DateTracker />
-        </div>
-      </div>
-      <ul class="hidden !h-[48px] md:flex menu menu-horizontal text-base-content">
-        <li><label @click="openModal">Import Save</label></li>
-        <li><a @click="store.reset()">Reset</a></li>
-      </ul>
-    </div>
-  </div>
+  <AppNavbar @import-save-click="openModal()" @reset-click="store.reset()" />
 
   <!-- Mobile -->
   <div class="md:hidden drawer">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
+
     <!-- Main content -->
     <div class="drawer-content">
       <div class="h-[calc(100vh-8rem)] overflow-y-auto">
@@ -40,22 +13,7 @@
         <VillagerGrid v-else-if="props.option === HomeViewOption.VILLAGERS" />
         <InventoryGrid v-else-if="props.option === HomeViewOption.INVENTORY" />
       </div>
-
-      <!-- Bottom nav -->
-      <div class="md:hidden btm-nav bg-base-200">
-        <button :class="[props.option === HomeViewOption.VILLAGERS ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.VILLAGERS}` })">
-          <font-awesome-icon icon="fa-solid fa-user-plus" class="text-green-400" />
-          <span class="btn-nav-label">Villagers</span>
-        </button>
-        <button :class="[props.option === HomeViewOption.TRACKER ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.TRACKER}` })">
-          <font-awesome-icon icon="fa-solid fa-heart" class="text-red-400" />
-          <span class="btn-nav-label">Tracker</span>
-        </button>
-        <button :class="[props.option === HomeViewOption.INVENTORY ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.INVENTORY}` })">
-          <font-awesome-icon icon="fa-solid fa-boxes-stacked" class="text-blue-400" />
-          <span class="btn-nav-label">Inventory</span>
-        </button>
-      </div>
+      <MobileBottomNav :option="props.option" />
     </div>
 
     <!-- Drawer menu -->
@@ -108,6 +66,7 @@
       </div>
     </div>
   </div>
+
   <ImportSaveModal ref="importSaveModal" />
 </template>
 
@@ -117,6 +76,8 @@ import VillagerGrid from '@/components/VillagerGrid.vue';
 import TrackingList from '@/components/TrackingList/TrackingList.vue';
 import InventoryGrid from '@/components/InventoryGrid.vue';
 import ImportSaveModal from '@/components/ImportSaveModal.vue';
+import MobileBottomNav from '@/components/MobileBottomNav.vue';
+import AppNavbar from '@/components/AppNavbar.vue';
 import { useStore } from '@/store';
 import { ref, type PropType } from 'vue';
 import { HomeViewOption } from '@/models';
