@@ -40,7 +40,7 @@
         <VillagerGrid v-else-if="props.option === HomeViewOption.VILLAGERS" />
         <InventoryGrid v-else-if="props.option === HomeViewOption.INVENTORY" />
       </div>
-
+      
       <!-- Bottom nav -->
       <div class="md:hidden btm-nav bg-base-200">
         <button :class="[props.option === HomeViewOption.VILLAGERS ? 'active' : '']" @click="$router.push({ path: `/${HomeViewOption.VILLAGERS}` })">
@@ -102,12 +102,13 @@
     </div>
 
     <!-- Right column -->
-    <div class="col-span-1 grid grid-rows-4 gap-4">
-      <div class="row-span-1 bg-base-200 overflow-y-auto rounded shadow-md shadow-black">
+    <div class="col-span-1 flex flex-col gap-4">
+      <div class="bg-base-200 overflow-y-auto rounded shadow-md shadow-black">
         <DateTracker />
       </div>
-      <div class="row-span-3 bg-base-200 rounded shadow-md shadow-black flex items-end justify-center">
-        <div class="italic text-xs tracking-wide mb-2 text-center">by @naroop and @jreinke428 2024</div>
+      <div class="bg-base-200 rounded shadow-md shadow-black flex flex-col flex-grow items-center justify-between overflow-y-auto p-2">
+        <InventoryGrid />
+        <div class="italic text-xs tracking-wide">by @naroop and @jreinke428 2023</div>
       </div>
     </div>
   </div>
