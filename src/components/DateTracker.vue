@@ -1,38 +1,38 @@
-<template lang="">
-  <div class="p-3 grid grid-cols-6 gap-x-5 gap-y-2">
-    <div class="col-span-6 flex mb-1">
-      <img :src="seasonIcons[store.date.season]" class="rounded w-[15%] ml-2" />
+<template>
+  <div class="p-3 flex flex-wrap gap-y-2">
+    <!-- Header with image and weekday -->
+    <div class="flex items-center w-full">
+      <img class="rounded w-[20%] ml-1" :src="seasonIcons[store.date.season]" />
       <span class="font-bold flex items-center ml-3">{{ weekdays[(store.date.day - 1) % 7] }}</span>
     </div>
-    <span class="text-base col-span-4 pl-2">Season</span>
-    <span class="text-base col-span-2 pl-2">Day</span>
-    <select class="select w-full col-span-4" v-model="store.date.season">
-      <option>{{ Season.SPRING }}</option>
-      <option>{{ Season.SUMMER }}</option>
-      <option>{{ Season.FALL }}</option>
-      <option>{{ Season.WINTER }}</option>
-    </select>
-    <input
-      placeholder="Day"
-      class="input w-full col-span-2"
-      :value="store.date.day"
-      @input="
-        (e: any) => {
-          if (!isNaN(e.target?.value) && e.target?.value !== '') {
-            e.target.value = store.date.day = Math.min(28, Math.max(1, parseInt(e.target?.value)));
-          } else if (e.target?.value !== '') {
-            e.target.value = store.date.day;
-          }
-        }
-      "
-      @focusout="
-        (e: any) => {
-          if (e.target.value === '') e.target.value = store.date.day = 1;
-        }
-      "
-    />
 
-    <div class="col-span-6 text-center">
+    <div class="flex w-full justify-between">
+      <!-- Season select -->
+      <label class="form-control w-3/5 mr-2">
+        <div class="label">
+          <span class="label-text">Season</span>
+        </div>
+        <select class="select w-full" v-model="store.date.season">
+          <option>{{ Season.SPRING }}</option>
+          <option>{{ Season.SUMMER }}</option>
+          <option>{{ Season.FALL }}</option>
+          <option>{{ Season.WINTER }}</option>
+        </select>
+      </label>
+
+      <!-- Day input -->
+      <label class="form-control flex-1">
+        <div class="label">
+          <span class="label-text">Day</span>
+        </div>
+        <select class="select w-full" v-model.number="store.date.day">
+          <option v-for="day in 28" :key="day" :value="day">{{ day }}</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Next Day Button -->
+    <div class="w-full text-center">
       <button class="btn btn-primary btn-block mt-2" @click="nextDay">Next Day</button>
     </div>
   </div>

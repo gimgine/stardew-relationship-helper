@@ -1,6 +1,9 @@
 <template>
-  <dialog id="importSaveModal" class="modal">
+  <dialog ref="modal" class="modal">
     <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-5 top-5">✕</button>
+      </form>
       <h3 class="font-bold text-lg">Import Save File</h3>
       <p class="py-4">Import a save file to automatically load in your friendship points, current in-game date, and item quantities.</p>
       <p class="text-sm italic">Note: friendship points and item quantities will only update for the villagers you are currently tracking.</p>
@@ -45,11 +48,11 @@
           :class="['file-input w-full max-w-xs bg-base-200 hover:brightness-90', fileError ? 'input-error' : '']"
           @change="handleFileUpload"
         />
-        <label for="my-modal" :class="['btn', isFileLoading ? 'loading' : '']" @click="submitSaveFile">Import</label>
+        <button :class="['btn', isFileLoading ? 'loading' : '']" @click="submitSaveFile">Import</button>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
-      <button>close</button>
+      <button>Close</button>
     </form>
   </dialog>
 </template>
@@ -63,17 +66,9 @@ import { Season } from '@/models';
 const isFileLoading = ref(false);
 const fileError = ref(false);
 const saveFile: Ref<File | null> = ref(null);
+const modal = ref({} as HTMLDialogElement);
 
 const store = useStore();
-
-const showModal = () => {
-  const modal = document.getElementById('importSaveModal') as HTMLDialogElement;
-  if (modal) {
-    modal.showModal();
-  } else {
-    console.error('Modal element not found');
-  }
-};
 
 function handleFileUpload(event: Event) {
   const inputElement = event.target as HTMLInputElement;
@@ -110,7 +105,7 @@ function submitSaveFile() {
       const season = parsedXML.SaveGame.player.seasonForSaveGame;
       store.addSaveFileData(friendshipData, { season: convertSeasonToString(season), day: day });
       isFileLoading.value = false;
-      close();
+      modal.value.close();
     } catch (error) {
       console.log(error);
       fileError.value = true;
@@ -134,5 +129,5 @@ const convertSeasonToString = (season: 1 | 2 | 3 | 4): Season => {
   }
 };
 
-defineExpose({ showModal });
+defineExpose({ showModal: () => modal.value.showModal(), closeModal: () => modal.value.close() });
 </script>
