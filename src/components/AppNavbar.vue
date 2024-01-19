@@ -14,7 +14,7 @@
       <span class="hidden md:block text-lg font-bold normal-case overflow-hidden whitespace-nowrap">Stardew Relationship Helper</span>
     </div>
     <div class="navbar-end">
-      <div class="dropdown dropdown-end md:hidden">
+      <div class="dropdown dropdown-end md:hidden touch-none">
         <div tabindex="0" role="button" class="btn m-1">
           <font-awesome-icon icon="fa-solid fa-calendar" size="lg" />
         </div>

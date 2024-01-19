@@ -3,15 +3,17 @@
   <AppNavbar @import-save-click="openModal()" @reset-click="store.reset()" />
 
   <!-- Mobile -->
-  <div class="md:hidden drawer">
+  <div class="md:hidden h-[calc(100vh-8rem)] overflow-y-auto drawer">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
 
     <!-- Main content -->
     <div class="drawer-content">
-      <div class="h-[calc(100vh-8rem)] overflow-y-auto">
+      <div class="bg-base-200">
         <TrackingList v-if="props.option === HomeViewOption.TRACKER" />
         <VillagerGrid v-else-if="props.option === HomeViewOption.VILLAGERS" />
-        <InventoryGrid v-else-if="props.option === HomeViewOption.INVENTORY" />
+        <div v-else-if="props.option === HomeViewOption.INVENTORY">
+          <InventoryGrid />
+        </div>
       </div>
       <MobileBottomNav :option="props.option" />
     </div>
@@ -61,7 +63,7 @@
       <div class="bg-base-200 overflow-y-auto rounded shadow-md shadow-black">
         <DateTracker />
       </div>
-      <div class="bg-base-200 rounded shadow-md shadow-black flex flex-col flex-grow items-center justify-between overflow-y-auto p-2">
+      <div class="bg-base-200 rounded shadow-md shadow-black flex flex-1 flex-col items-center justify-between overflow-y-auto">
         <InventoryGrid />
       </div>
     </div>
