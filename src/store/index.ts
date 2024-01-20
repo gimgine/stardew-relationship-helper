@@ -145,9 +145,9 @@ export const useInventoryStore = defineStore('inventoryStore', () => {
 
   const add = (items: Item[]): void => {
     for (const item of items) {
-      item.quantity = 0;
       if (!inventory.value.some((existingItem) => existingItem.name === item.name)) {
         item.loveCount = 1;
+        item.quantity = 0;
         inventory.value.push(item);
       } else {
         inventory.value[inventory.value.findIndex((invItem) => invItem.name === item.name)].loveCount++;
