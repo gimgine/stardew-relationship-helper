@@ -134,7 +134,9 @@ export const useInventoryStore = defineStore('inventoryStore', () => {
     return inventory.value.filter((i: Item) => i.loveCount > 0);
   });
   const inventoryFilter = ref<string>('');
-  const filteredInventory = ref<Item[]>([]);
+  const filteredInventory = computed(() => {
+    return displayedInventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
+  });
 
   const changeQuantity = (name: string, value: number) => {
     const item = inventory.value.find((item) => item.name === name);
@@ -165,23 +167,10 @@ export const useInventoryStore = defineStore('inventoryStore', () => {
     }
   };
 
-  const filter = () => {
-    filteredInventory.value = displayedInventory.value.filter((item) => item.name.toLowerCase().includes(inventoryFilter.value.toLowerCase()));
-  };
-
   watch(
     inventory,
     (newValue) => {
       localStorage.setItem('inventory', JSON.stringify(newValue));
-      filter();
-    },
-    { deep: true }
-  );
-
-  watch(
-    inventoryFilter,
-    () => {
-      filter();
     },
     { deep: true }
   );
@@ -193,7 +182,6 @@ export const useInventoryStore = defineStore('inventoryStore', () => {
     filteredInventory,
     changeQuantity,
     add,
-    remove,
-    filter
+    remove
   };
 });
