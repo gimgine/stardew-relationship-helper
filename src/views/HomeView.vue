@@ -3,7 +3,7 @@
   <AppNavbar @import-save-click="openModal()" @reset-click="store.reset()" />
 
   <!-- Mobile -->
-  <div class="md:hidden h-[calc(100vh-8rem)] overflow-y-auto drawer">
+  <div class="md:hidden overflow-y-auto drawer">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
 
     <!-- Main content -->
@@ -15,35 +15,18 @@
           <InventoryGrid />
         </div>
       </div>
-      <MobileBottomNav :option="props.option" />
+      <!-- <MobileBottomNav :option="props.option" /> -->
     </div>
 
     <!-- Drawer menu -->
     <div class="drawer-side">
       <label for="drawer" class="drawer-overlay"></label>
-      <ul class="menu py-4 gap-3 w-56 bg-base-100 text-base-content h-full">
-        <li class="flex flex-col">
-          <label for="drawer" @click="openModal">
-            <a>
-              <font-awesome-icon class="mr-1" icon="fa-solid fa-file-import" />
-              Import Save File
-            </a>
-          </label>
-        </li>
-        <li>
-          <label for="drawer" @click="store.reset()">
-            <a>
-              <font-awesome-icon class="mr-1" icon="fa-solid fa-arrows-rotate" />
-              Reset
-            </a>
-          </label>
-        </li>
-      </ul>
+      <MobileDrawerMenu :option="props.option" @navigate="handleNavigation" @import-save-click="openModal" @reset-click="store.reset" />
     </div>
   </div>
 
   <!-- Desktop -->
-  <div class="hidden md:grid grid-cols-5 grid-rows-1 max-h-[calc(100vh-4rem)] p-4 gap-4" data-theme="dark">
+  <div class="hidden md:grid grid-cols-5 grid-rows-1 min-h-[calc(100vh-4rem)] p-4 gap-4" data-theme="dark">
     <!-- Left column -->
     <div class="col-span-1 flex flex-col">
       <div class="flex-1 overflow-y-auto bg-base-200 rounded shadow-md shadow-black">
@@ -78,11 +61,13 @@ import VillagerGrid from '@/components/VillagerGrid.vue';
 import TrackingList from '@/components/TrackingList/TrackingList.vue';
 import InventoryGrid from '@/components/InventoryGrid.vue';
 import ImportSaveModal from '@/components/ImportSaveModal.vue';
-import MobileBottomNav from '@/components/MobileBottomNav.vue';
+// import MobileBottomNav from '@/components/MobileBottomNav.vue';
+import MobileDrawerMenu from '@/components/MobileDrawerMenu.vue';
 import AppNavbar from '@/components/AppNavbar.vue';
 import { useStore } from '@/store';
 import { ref, type PropType } from 'vue';
 import { HomeViewOption } from '@/models';
+import router from '@/router';
 
 const importSaveModal = ref({} as InstanceType<typeof ImportSaveModal>);
 
@@ -95,4 +80,8 @@ const props = defineProps({
 function openModal() {
   importSaveModal.value?.showModal();
 }
+
+const handleNavigation = (option: HomeViewOption) => {
+  router.push({ path: `/${option}` });
+};
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-3 p-2">
+  <div class="flex flex-col gap-3 p-3">
     <TrackingListItem v-for="villager in villagerStore.trackedVillagers" :key="villager.name" :villager="villager" />
   </div>
 </template>

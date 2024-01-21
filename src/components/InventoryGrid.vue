@@ -1,10 +1,11 @@
 <template lang="html">
   <div class="p-3 w-full">
     <input v-model="inventoryStore.inventoryFilter" type="text" placeholder="Search" class="input min-h-[3rem] w-full mb-2 bg-base-100" />
-    <div class="flex flex-col gap-2 w-full overflow-y-auto overflow-x-hidden">
-      <div class="flex gap-2 items-center border-b-2 pb-2 border-base-100" v-for="item in inventoryStore.filteredInventory" :key="item.name">
+
+    <div class="flex flex-col w-full overflow-y-auto overflow-x-hidden">
+      <div class="flex gap-3 items-center border-b-2 py-2 border-base-100" v-for="item in inventoryStore.filteredInventory" :key="item.name">
         <a :href="item.wikiURL" target="_blank">
-          <img class="mb-1 hover:brightness-75 object-fill md:max-w-[1.5rem]" :src="item.imgURL" />
+          <img class="hover:brightness-75 object-fill md:max-w-[1.5rem]" :src="item.imgURL" />
         </a>
         <p
           class="truncate flex-grow md:text-sm"

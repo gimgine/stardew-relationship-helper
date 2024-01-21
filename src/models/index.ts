@@ -46,5 +46,6 @@ export enum Quality {
 export enum HomeViewOption {
   TRACKER = 'tracker',
   VILLAGERS = 'villagers',
-  INVENTORY = 'inventory'
+  INVENTORY = 'inventory',
+  DESKTOP = 'desktop'
 }
