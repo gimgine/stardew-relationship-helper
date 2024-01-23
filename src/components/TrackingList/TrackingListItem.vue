@@ -5,7 +5,7 @@
         <a class="hover:brightness-75 flex items-end" target="_blank" :href="props.villager.wikiURL">
           <img class="min-w-[96px] h-[96px] md:min-w-[128px] md:h-[128px]" :src="props.villager.imgURL" :id="props.villager.name + 'Image'" />
         </a>
-        <div class="flex flex-col justify-center pl-6 pr-10">
+        <div class="flex flex-col justify-center w-48 pl-6 pr-10">
           <h1 class="text-xl md:text-3xl font-bold">
             {{ props.villager.name.charAt(0).toUpperCase() + props.villager.name.slice(1) }}
           </h1>

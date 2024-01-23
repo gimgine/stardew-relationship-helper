@@ -3,7 +3,7 @@
   <AppNavbar @import-save-click="openModal()" @reset-click="store.reset()" />
 
   <!-- Mobile -->
-  <div class="md:hidden overflow-y-auto drawer">
+  <div class="md:hidden overflow-y-auto drawer [position:initial]">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
 
     <!-- Main content -->
@@ -26,7 +26,7 @@
   </div>
 
   <!-- Desktop -->
-  <div class="hidden md:grid grid-cols-5 grid-rows-1 min-h-[calc(100vh-4rem)] p-4 gap-4" data-theme="dark">
+  <div class="hidden md:grid grid-cols-5 grid-rows-1 h-[calc(100vh-4rem)] p-4 gap-4" data-theme="dark">
     <!-- Left column -->
     <div class="col-span-1 flex flex-col">
       <div class="flex-1 overflow-y-auto bg-base-200 rounded shadow-md shadow-black">
