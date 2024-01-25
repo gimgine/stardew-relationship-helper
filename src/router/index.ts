@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: '/tracker'
+      redirect: `/${HomeViewOption.TRACKER}`
     },
     {
       path: '/:option',

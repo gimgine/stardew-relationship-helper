@@ -8,21 +8,23 @@
           <img class="min-w-[96px] h-[96px] md:min-w-[128px] md:h-[128px]" :src="props.villager.imgURL" :id="props.villager.name + 'Image'" />
         </a>
         <!-- Name/hearts -->
-        <div class="flex flex-col flex-grow justify-center group">
+        <div class="flex flex-col flex-grow justify-center group h-full">
           <h1 class="text-xl md:text-3xl font-bold">
             {{ props.villager.name.charAt(0).toUpperCase() + props.villager.name.slice(1) }}
           </h1>
+
           <div class="flex items-center relative">
             <div class="flex flex-col w-1/2">
-              <div class="flex items-center justify-around">
+              <div class="flex items-center justify-around px-1">
                 <img class="object-contain mt-1 w-6 md:w-9" src="@/assets/heart-icon.webp" />
                 <h1 class="text-xl md:text-3xl font-bold pr-1">
                   {{ isNaN(Math.floor(props.villager.friendshipPoints / 250)) ? 0 : Math.floor(props.villager.friendshipPoints / 250) }}
                 </h1>
               </div>
-              <div class="w-full flex flex-col items-center text-center">
-                <progress class="progress progress-success transition-all" :value="props.villager.friendshipPoints % 250" max="250" />
-                <span class="text-xs italic font-light invisible group-hover:visible cursor-default">
+
+              <div class="w-full flex flex-col items-center text-center pt-1">
+                <progress class="progress progress-success" :value="props.villager.friendshipPoints % 250" max="250" />
+                <span class="text-xs italic font-light cursor-default opacity-0 group-hover:opacity-100 transition-opacity">
                   {{ props.villager.friendshipPoints % 250 }} / 250
                 </span>
               </div>
@@ -35,7 +37,7 @@
       <!-- Items -->
       <div class="flex flex-grow">
         <div class="flex flex-col p-2 flex-grow select-none">
-          <p class="text-xs italic pb-1">you have</p>
+          <p class="text-xs italic pb-1">have</p>
           <div class="flex overflow-x-auto h-12">
             <img
               class="object-contain [-webkit-touch-callout:none!important]"
@@ -46,10 +48,10 @@
               v-draggable="{ onDragEnd: () => onDragEnd(item.name), onDrag }"
             />
           </div>
-          <p class="text-xs italic py-1">you could get</p>
+          <p class="text-xs italic py-1">don't have</p>
           <div class="flex overflow-x-auto">
             <img
-              class="brightness-50 object-contain"
+              class="brightness-50 hover:opacity-70 object-contain"
               v-for="item in inventoryStore.inventory.filter((i) => villager.loves.some((j) => i.name === j.name) && i.quantity === 0)"
               :key="item.name"
               :src="item.imgURL"
