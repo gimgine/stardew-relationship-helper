@@ -1,23 +1,38 @@
 <template>
   <div class="flex bg-base-100 rounded shadow-md shadow-black">
     <div class="flex flex-col md:flex-row flex-grow">
-      <div class="flex">
+      <!-- Picture/name/hearts -->
+      <div class="flex min-w-72 overflow-x-auto">
+        <!-- Picture -->
         <a class="hover:brightness-75 flex items-end" target="_blank" :href="props.villager.wikiURL">
           <img class="min-w-[96px] h-[96px] md:min-w-[128px] md:h-[128px]" :src="props.villager.imgURL" :id="props.villager.name + 'Image'" />
         </a>
-        <div class="flex flex-col justify-center w-48 pl-6 pr-10">
+        <!-- Name/hearts -->
+        <div class="flex flex-col flex-grow justify-center group">
           <h1 class="text-xl md:text-3xl font-bold">
             {{ props.villager.name.charAt(0).toUpperCase() + props.villager.name.slice(1) }}
           </h1>
-          <div class="flex items-center">
-            <img class="object-contain mt-1 w-6 md:w-9" src="@/assets/heart-icon.webp" />
-            <h1 class="text-xl md:text-3xl font-bold ml-1">
-              {{ isNaN(Math.floor(props.villager.friendshipPoints / 250)) ? 0 : Math.floor(props.villager.friendshipPoints / 250) }}
-            </h1>
-            <img class="object-contain w-6 md:w-9 ml-2" v-if="villager.isMarried" src="@/assets/mermaids-pendant.png" />
+          <div class="flex items-center relative">
+            <div class="flex flex-col w-1/2">
+              <div class="flex items-center justify-around">
+                <img class="object-contain mt-1 w-6 md:w-9" src="@/assets/heart-icon.webp" />
+                <h1 class="text-xl md:text-3xl font-bold pr-1">
+                  {{ isNaN(Math.floor(props.villager.friendshipPoints / 250)) ? 0 : Math.floor(props.villager.friendshipPoints / 250) }}
+                </h1>
+              </div>
+              <div class="w-full flex flex-col items-center text-center">
+                <progress class="progress progress-success transition-all" :value="props.villager.friendshipPoints % 250" max="250" />
+                <span class="text-xs italic font-light invisible group-hover:visible cursor-default">
+                  {{ props.villager.friendshipPoints % 250 }} / 250
+                </span>
+              </div>
+            </div>
+            <ShippingBin ref="bin" class="min-w-[40px] max-w-[40px] md:min-w-[50px] md:max-w-[50px] absolute right-3" />
           </div>
         </div>
       </div>
+
+      <!-- Items -->
       <div class="flex flex-grow">
         <div class="flex flex-col p-2 flex-grow select-none">
           <p class="text-xs italic pb-1">you have</p>
@@ -39,10 +54,10 @@
               :key="item.name"
               :src="item.imgURL"
               draggable="false"
+              @click="useInventoryStore().inventoryFilter = item.name"
             />
           </div>
         </div>
-        <ShippingBin ref="bin" class="min-w-[48px] max-w-[48px] md:min-w-[56px] md:max-w-[56px]" />
       </div>
     </div>
     <div class="flex flex-col justify-between">
