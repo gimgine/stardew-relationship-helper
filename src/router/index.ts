@@ -8,8 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
-      props: { option: HomeViewOption.DESKTOP }
+      redirect: `/${HomeViewOption.TRACKER}`
     },
     {
       path: '/:option',
