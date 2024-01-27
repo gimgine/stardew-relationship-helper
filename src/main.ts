@@ -4,6 +4,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import App from './App.vue';
 import router from './router';
+import { createMetaManager } from 'vue-meta';
 
 import 'tailwindcss/base.css';
 import 'tailwindcss/components.css';
@@ -11,6 +12,7 @@ import 'tailwindcss/utilities.css';
 
 const app = createApp(App);
 const pinia = createPinia();
+const metaManager = createMetaManager();
 
 import {
   faXmark,
@@ -28,6 +30,7 @@ library.add(faXmark, faCakeCandles, faUserPlus, faHeart, faBoxesStacked, faApple
 
 app.use(router);
 app.use(pinia);
+app.use(metaManager);
 app.directive('draggable', DraggableDirective);
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.mount('#app');
